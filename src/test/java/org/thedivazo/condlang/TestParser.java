@@ -116,7 +116,7 @@ public class TestParser {
         parserExpression.setCondition("[a-zA-Z0-9\\.]+");
 
         System.out.println(parserExpression.execute("$variable.0.1", NumberUtils.DOUBLE_ZERO, variables));
-        assertEquals(5d,(Double) parserExpression.execute("$variable.0.1", NumberUtils.DOUBLE_ZERO, variables));
+        assertEquals(5d, parserExpression.execute("$variable.0.1", NumberUtils.DOUBLE_ZERO, variables));
         assertEquals("5",parserExpression.execute("$variable.0.2", NumberUtils.DOUBLE_ZERO, variables));
         assertTrue((boolean) parserExpression.execute("$variable.0.3", NumberUtils.DOUBLE_ZERO, variables));
         assertEquals(2d,(double) parserExpression.execute("$variable.0.4", NumberUtils.DOUBLE_ZERO, variables));
