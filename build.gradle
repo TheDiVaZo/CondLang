@@ -1,9 +1,32 @@
 plugins {
     id 'java'
+    id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '7.1.2'
 }
 
 group 'org.thedivazo.condlang'
 version '1.0-SNAPSHOT'
+
+publishing {
+    repositories {
+        maven {
+            name = "condlang"
+            url = uri("https://maven.pkg.github.com/thedivazo/condlang")
+            credentials {
+                username = project.property("USERNAME")
+                password = project.property("TOKEN")
+            }
+        }
+    }
+    publications {
+        gpr(MavenPublication) {
+            groupId = group
+            artifactId = rootProject.getName()
+            version = version
+            artifact jar
+        }
+    }
+}
 
 repositories {
     maven { url "https://mvnrepository.com/artifact/org.mvel/mvel2" }
@@ -36,6 +59,9 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+shadowJar {
+    minimize()
 }
 
 compileJava {
