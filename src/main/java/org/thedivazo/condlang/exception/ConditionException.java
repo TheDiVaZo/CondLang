@@ -1,4 +1,4 @@
-package org.thedivazo.dicesystem.parserexpression.exception;
+package org.thedivazo.condlang.exception;
 
 public class ConditionException extends CompileException{
     public ConditionException(String message) {

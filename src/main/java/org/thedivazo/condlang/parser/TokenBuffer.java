@@ -1,7 +1,7 @@
-package org.thedivazo.dicesystem.parserexpression.parser;
+package org.thedivazo.condlang.parser;
 
-import org.thedivazo.dicesystem.parserexpression.lexer.Token;
-import org.thedivazo.dicesystem.parserexpression.lexer.TokenType;
+import org.thedivazo.condlang.lexer.Token;
+import org.thedivazo.condlang.lexer.TokenType;
 
 import java.util.List;
 import java.util.Objects;

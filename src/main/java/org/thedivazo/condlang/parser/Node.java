@@ -1,10 +1,10 @@
-package org.thedivazo.dicesystem.parserexpression.parser;
+package org.thedivazo.condlang.parser;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.List;
 
 @RequiredArgsConstructor
 public abstract class Node implements Serializable {

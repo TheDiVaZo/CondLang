@@ -1,4 +1,4 @@
-package org.thedivazo.dicesystem.parserexpression.exception;
+package org.thedivazo.condlang.exception;
 
 public class FanoConditionException extends CompileException {
     public FanoConditionException(String regEx1, String regEx2) {

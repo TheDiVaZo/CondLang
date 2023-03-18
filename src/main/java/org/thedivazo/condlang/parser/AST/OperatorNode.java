@@ -1,8 +1,10 @@
-package org.thedivazo.dicesystem.parserexpression.parser.AST;
+package org.thedivazo.condlang.parser.AST;
 
-import org.thedivazo.dicesystem.parserexpression.parser.Node;
+import org.thedivazo.condlang.parser.Node;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class OperatorNode extends Node {

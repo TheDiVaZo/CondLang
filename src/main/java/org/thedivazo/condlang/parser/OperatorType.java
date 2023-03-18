@@ -1,4 +1,4 @@
-package org.thedivazo.dicesystem.parserexpression.parser;
+package org.thedivazo.condlang.parser;
 
 public enum OperatorType {
     UNARY,

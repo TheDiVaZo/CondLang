@@ -1,17 +1,15 @@
-package org.thedivazo.dicesystem.parserexpression.interpreter.wrapper;
+package org.thedivazo.condlang.interpreter.wrapper;
 
-import org.thedivazo.dicesystem.parserexpression.exception.InterpreterException;
+import org.thedivazo.condlang.exception.InterpreterException;
 
-import javax.annotation.Nullable;
 import java.lang.constant.Constable;
 import java.util.Set;
 
-public interface WrapperObject<T, T1> extends Constable {
+public interface WrapperObject<T> extends Constable {
     T getObject();
 
     Set<String> getMethodsName();
     boolean hasMethod(String nameMethod, Class<?>... methodArgumentsType);
 
-    @Nullable
-    Object executeMethod(String nameMethod, T1... methodArguments) throws InterpreterException;
+    Object executeMethod(String nameMethod, Object... methodArguments) throws InterpreterException;
 }

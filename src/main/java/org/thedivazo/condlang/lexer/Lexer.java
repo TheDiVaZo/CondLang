@@ -1,9 +1,13 @@
-package org.thedivazo.dicesystem.parserexpression.lexer;
+package org.thedivazo.condlang.lexer;
 
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import lombok.NoArgsConstructor;
 import org.apache.commons.collections4.map.LinkedMap;
-import org.thedivazo.dicesystem.parserexpression.exception.FanoConditionException;
-import org.thedivazo.dicesystem.parserexpression.exception.SyntaxException;
+import org.apache.commons.collections4.map.MultiKeyMap;
+import org.intellij.lang.annotations.RegExp;
+import org.thedivazo.condlang.exception.FanoConditionException;
+import org.thedivazo.condlang.exception.SyntaxException;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -13,7 +17,7 @@ import java.util.stream.Collectors;
 /**
  * Лексер, который подвергает код лексическому анализу, и по завершению выдает список токенов.
  * @author TheDiVaZo
- * @version 1.2
+ * @version 1.3
  *
  */
 @NoArgsConstructor
@@ -21,13 +25,14 @@ public class Lexer {
     /**
      * Хранит RegEx'ы и типы токенов, которые будут строиться по этим RegEx'ам.
      */
-    protected Map<String, TokenType> tokenTypeMap = new LinkedMap<>();
+    protected Multimap<String, TokenType> tokenTypeMap = MultimapBuilder.hashKeys().arrayListValues().build();
 
     /**
      * @param regEx regEx, по которому будет присваиваться тип токена
      * @param tokenType Тип токена
      */
-    public void putOperator(String regEx, TokenType tokenType) {
+
+    public void putOperator(@RegExp String regEx, TokenType tokenType) {
         tokenTypeMap.put(regEx, tokenType);
     }
 
@@ -36,8 +41,12 @@ public class Lexer {
      * @param sign regEx, по которому будет удаляться тип токена
      * @return тип удаленного токена
      */
-    public TokenType removeOperator(String sign) {
-       return tokenTypeMap.remove(sign);
+    public void removeOperator(@RegExp String sign) {
+        tokenTypeMap.removeAll(sign);
+    }
+
+    public void removeOperator(@RegExp String sign, TokenType tokenType) {
+        tokenTypeMap.remove(sign, tokenType);
     }
 
 
@@ -47,7 +56,7 @@ public class Lexer {
      * @return Возвращает массив с токенами.
      * @throws SyntaxException если в коде присутствуют синтаксические ошибки, то будет вызвано это исключение;
      */
-    public List<Token> analyze(String code) throws SyntaxException, FanoConditionException {
+    public List<Token> analyze(String code) throws SyntaxException {
         List<Token> result = new ArrayList<>();
         StringBuilder sliceCode = new StringBuilder(code);
         int position = 0;
@@ -57,11 +66,11 @@ public class Lexer {
             String token = null;
             TokenType tokenType = null;
             TokenType finalRequireNextToken = requireNextToken;
-            Set<Map.Entry<String,TokenType>> entryTokenMap = Objects.isNull(requireNextToken) ? tokenTypeMap.entrySet() : tokenTypeMap.entrySet().stream().filter(entry->entry.getValue().equals(finalRequireNextToken)).collect(Collectors.toSet());
+            Collection<Map.Entry<String,TokenType>> entryTokenMap = Objects.isNull(requireNextToken) ? tokenTypeMap.entries() : tokenTypeMap.entries().stream().filter(entry->entry.getValue().equals(finalRequireNextToken)).collect(Collectors.toSet());
             for (Map.Entry<String,TokenType> entryToken : entryTokenMap) {
                 String regEx = entryToken.getKey();
                 Matcher matcher = Pattern.compile("^" + regEx).matcher(sliceCode);
-                if (matcher.find()) {
+                if (matcher.find() && (entryToken.getValue().isIndependentToken() || entryToken.getValue().equals(finalRequireNextToken))) {
                     token = matcher.group();
                     tokenType = entryToken.getValue();
                     break;

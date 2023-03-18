@@ -1,4 +1,4 @@
-package org.thedivazo.dicesystem.parserexpression.lexer;
+package org.thedivazo.condlang.lexer;
 
 public enum TokenType {
     EOF,
@@ -11,7 +11,12 @@ public enum TokenType {
     COMPOUND_END,
     SPACE,
     DELIMITER,
-    METHOD,
+    METHOD {
+        @Override
+        public boolean isIndependentToken() {
+            return false;
+        }
+    },
     METHOD_REFERENCE() {
         @Override
         public TokenType requireNextToken() {
@@ -29,5 +34,8 @@ public enum TokenType {
 
     public TokenType requireNextToken(){
         return null;
-    };
+    }
+    public boolean isIndependentToken(){
+        return true;
+    }
 }

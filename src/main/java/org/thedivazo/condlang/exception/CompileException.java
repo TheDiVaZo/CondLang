@@ -1,4 +1,4 @@
-package org.thedivazo.dicesystem.parserexpression.exception;
+package org.thedivazo.condlang.exception;
 
 /**
  * Родоначальник всех ошибок в моем парсере.

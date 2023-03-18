@@ -1,16 +1,19 @@
-package org.thedivazo.dicesystem.parserexpression.parser;
+package org.thedivazo.condlang.parser;
 
 import lombok.*;
 import org.apache.commons.collections4.list.SetUniqueList;
-import org.thedivazo.dicesystem.parserexpression.parser.AST.*;
-import org.thedivazo.dicesystem.parserexpression.exception.CompileException;
-import org.thedivazo.dicesystem.parserexpression.exception.SyntaxException;
-import org.thedivazo.dicesystem.parserexpression.lexer.Lexer;
-import org.thedivazo.dicesystem.parserexpression.lexer.Token;
-import org.thedivazo.dicesystem.parserexpression.lexer.TokenType;
-import thedivazo.parserexpression.parser.AST.*;
+import org.intellij.lang.annotations.RegExp;
+import org.thedivazo.condlang.exception.CompileException;
+import org.thedivazo.condlang.exception.SyntaxException;
+import org.thedivazo.condlang.lexer.Lexer;
+import org.thedivazo.condlang.lexer.Token;
+import org.thedivazo.condlang.lexer.TokenType;
+import org.thedivazo.condlang.parser.AST.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Данный класс предназначен для парсинга списка токенов ({@link Lexer}) в дерево узлов (AST).
@@ -70,7 +73,7 @@ public class Parser {
         return expr(new TokenBuffer(tokenList));
     }
 
-    public Node expr(TokenBuffer tokenBuffer) throws CompileException {
+    protected Node expr(TokenBuffer tokenBuffer) throws CompileException {
         if(tokenBuffer.tokenList.isEmpty()) throw new SyntaxException("The expression cannot be empty",0,tokenBuffer.tokensToCode());
         if(tokenBuffer.next().getLexemeType().equals(TokenType.EOF)) throw new SyntaxException("The expression cannot be empty",tokenBuffer.current().getPosition(),tokenBuffer.tokensToCode());
         tokenBuffer.prev();
@@ -81,7 +84,7 @@ public class Parser {
         return listOfPriorityOperator.get(indexPriority);
     }
 
-    public Node ternaryOperator(TokenBuffer tokenBuffer, Set<OperatorData> operatorData, int indexPriority) throws CompileException {
+    protected Node ternaryOperator(TokenBuffer tokenBuffer, Set<OperatorData> operatorData, int indexPriority) throws CompileException {
         OperatorData operatorDataOne = operatorData.stream().toList().get(0);
         OperatorData operatorDataTwo = operatorData.stream().toList().get(1);
         Node argumentOneNode = operator(tokenBuffer, indexPriority-1);
@@ -99,7 +102,7 @@ public class Parser {
         return ternaryOperatorNode;
     }
 
-    public Node binaryOperator(TokenBuffer tokenBuffer, Set<OperatorData> operatorsData, int indexPriority) throws CompileException {
+    protected Node binaryOperator(TokenBuffer tokenBuffer, Set<OperatorData> operatorsData, int indexPriority) throws CompileException {
         Node prevNode = operator(tokenBuffer, indexPriority-1);
         while (tokenBuffer.hasNext()) {
             Token token = tokenBuffer.next();
@@ -118,7 +121,7 @@ public class Parser {
         return prevNode;
     }
 
-    public Node unaryOperator(TokenBuffer tokenBuffer, Set<OperatorData> operatorsData, int indexPriority) throws CompileException {
+    protected Node unaryOperator(TokenBuffer tokenBuffer, Set<OperatorData> operatorsData, int indexPriority) throws CompileException {
         Token token = tokenBuffer.next();
         Node argument = null;
         if(operatorsData.stream().anyMatch(operatorData -> operatorData.getSignOperator().equals(token.getSign())) && token.getLexemeType().equals(TokenType.OPERATOR)) {
@@ -132,7 +135,7 @@ public class Parser {
         return argument;
     }
 
-    public Node operator(TokenBuffer tokenBuffer,int indexPriority) throws CompileException {
+    protected Node operator(TokenBuffer tokenBuffer,int indexPriority) throws CompileException {
         if(indexPriority < 0) return method(tokenBuffer);
         Set<OperatorData> operatorsData = getOperatorForIndex(indexPriority);
         if(operatorsData.size() == 2) {
@@ -149,7 +152,7 @@ public class Parser {
         }
     }
 
-    public Node factor(TokenBuffer tokenBuffer) throws CompileException {
+    protected Node factor(TokenBuffer tokenBuffer) throws CompileException {
         Token currentToken = tokenBuffer.next();
         switch (currentToken.getLexemeType()) {
 
@@ -179,7 +182,7 @@ public class Parser {
         }
     }
 
-    public Node function(TokenBuffer tokenBuffer) throws CompileException {
+    protected Node function(TokenBuffer tokenBuffer) throws CompileException {
         Token currentToken = tokenBuffer.next();
         if(!currentToken.lexemeType().equals(TokenType.FUNCTION)) return method(tokenBuffer);
         if(!tokenBuffer.next().lexemeType().equals(TokenType.COMPOUND_START)) throw new SyntaxException("Compound start expected", currentToken.getPosition(), tokenBuffer.tokensToCode());
@@ -206,7 +209,7 @@ public class Parser {
         return functionOperatorNode;
     }
 
-    public Node method(TokenBuffer tokenBuffer) throws CompileException {
+    protected Node method(TokenBuffer tokenBuffer) throws CompileException {
         Node conditionNode = factor(tokenBuffer);
         while (tokenBuffer.hasNext()) {
             Token token = tokenBuffer.next();

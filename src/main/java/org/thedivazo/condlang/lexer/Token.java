@@ -1,9 +1,8 @@
-package org.thedivazo.dicesystem.parserexpression.lexer;
+package org.thedivazo.condlang.lexer;
 
 import lombok.Getter;
 
 import java.util.Objects;
-
 
 public record Token(@Getter TokenType lexemeType, @Getter String sign, int position) {
 

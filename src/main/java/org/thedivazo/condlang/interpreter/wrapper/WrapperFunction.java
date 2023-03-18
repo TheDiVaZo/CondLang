@@ -1,4 +1,4 @@
-package org.thedivazo.dicesystem.parserexpression.interpreter.wrapper;
+package org.thedivazo.condlang.interpreter.wrapper;
 
 public interface WrapperFunction {
 }

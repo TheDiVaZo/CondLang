@@ -1,6 +1,6 @@
-package org.thedivazo.dicesystem.parserexpression.parser.AST;
+package org.thedivazo.condlang.parser.AST;
 
-import org.thedivazo.dicesystem.parserexpression.parser.Node;
+import org.thedivazo.condlang.parser.Node;
 
 import java.util.List;
 

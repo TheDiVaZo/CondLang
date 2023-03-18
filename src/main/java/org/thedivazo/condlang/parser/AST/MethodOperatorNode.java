@@ -1,8 +1,8 @@
-package org.thedivazo.dicesystem.parserexpression.parser.AST;
+package org.thedivazo.condlang.parser.AST;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.thedivazo.dicesystem.parserexpression.parser.Node;
+import org.thedivazo.condlang.parser.Node;
 
 public class MethodOperatorNode extends FunctionOperatorNode {
 

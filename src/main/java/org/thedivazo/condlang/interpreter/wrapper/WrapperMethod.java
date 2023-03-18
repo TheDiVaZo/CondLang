@@ -1,11 +1,11 @@
-package org.thedivazo.dicesystem.parserexpression.interpreter.wrapper;
+package org.thedivazo.condlang.interpreter.wrapper;
 
 import java.lang.constant.Constable;
 
-public interface WrapperMethod<T, T1, V> extends Constable {
+public interface WrapperMethod<T, V> extends Constable {
     String getMethodName();
     Class<?>[] getArgumentTypes();
-    V execute(WrapperObject<T, T1> wrapperObjectContext, T1... arguments);
+    V execute(WrapperObject<T> wrapperObjectContext, Object... arguments);
 
     boolean equals(String methodName, Class<?>[] argumentTypes);
 }

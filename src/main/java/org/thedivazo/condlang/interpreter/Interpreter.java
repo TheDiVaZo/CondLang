@@ -1,14 +1,15 @@
-package org.thedivazo.dicesystem.parserexpression.interpreter;
+package org.thedivazo.condlang.interpreter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.thedivazo.dicesystem.parserexpression.exception.InterpreterException;
-import org.thedivazo.dicesystem.parserexpression.interpreter.wrapper.WrapperObject;
-import org.thedivazo.dicesystem.parserexpression.parser.AST.*;
-import org.thedivazo.dicesystem.utils.TernFunction;
-import thedivazo.parserexpression.parser.AST.*;
-import org.thedivazo.dicesystem.parserexpression.parser.Node;
+import org.intellij.lang.annotations.RegExp;
+import org.thedivazo.condlang.exception.InterpreterException;
+import org.thedivazo.condlang.interpreter.wrapper.WrapperObject;
+import org.thedivazo.condlang.parser.AST.*;
+import org.thedivazo.condlang.parser.Node;
+import org.thedivazo.condlang.utils.TernFunction;
+import org.thedivazo.condlang.parser.AST.*;
 
 import java.util.*;
 import java.util.function.BiFunction;
@@ -29,7 +30,7 @@ public class Interpreter<T, R extends B, B> {
     class ConditionName {
 
         @Getter
-        private final String regEx;
+        private final @RegExp String regEx;
 
         @Getter
         private final BiFunction<T,String,B> condition;
@@ -66,7 +67,7 @@ public class Interpreter<T, R extends B, B> {
         listFunctionOperators.put(sign, functionOperator);
     }
 
-    public void addCondition(String regEx, BiFunction<T,String,B> condition) {
+    public void addCondition(@RegExp String regEx, BiFunction<T,String,B> condition) {
         listConditionNames.add(new ConditionName(regEx, condition));
     }
 
@@ -109,7 +110,7 @@ public class Interpreter<T, R extends B, B> {
             B context = execute(methodOperatorNode.getContext(), input, localConditions);
             List<B> arguments = executeList(methodOperatorNode.getChildrenNodes(), input, localConditions);
             if(context instanceof WrapperObject<?> wrapperObject) {
-                Object value = wrapperObject.executeMethod(methodOperatorNode.getNodeName(), arguments);
+                Object value = wrapperObject.executeMethod(methodOperatorNode.getNodeName(), arguments.toArray());
                 return (B) value;
             }
             else throw new InterpreterException(String.format("Condition \"%s\" not be Object.", methodOperatorNode.getContext().getNodeName()));
