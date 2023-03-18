@@ -10,5 +10,7 @@ jobs:
         with:
           java-version: 16
           distribution: 'adopt'
+      - name: Change wrapper permissions
+        run: chmod +x ./gradlew
       - name: Build with Gradle
         run: ./gradlew build
