@@ -13,8 +13,8 @@ publishing {
             name = "condlang"
             url = uri("https://maven.pkg.github.com/thedivazo/condlang")
             credentials {
-                username = project.property("USERNAME")
-                password = project.property("TOKEN")
+                username = project.findProperty("USERNAME") ?: System.getenv("USERNAME")
+                password = project.findProperty("TOKEN") ?: System.getenv("TOKEN")
             }
         }
     }
