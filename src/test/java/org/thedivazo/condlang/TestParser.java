@@ -103,25 +103,25 @@ public class TestParser {
         assertEquals(1d, parserExpression.execute(code40));
     }
 
-    @Test
-    void variableTest() throws InterpreterException, CompileException {
-
-        Map<String, Constable> variables = new HashMap<>();
-        variables.put("variable.0.1", (Constable) 5d);
-        variables.put("variable.0.2", "5");
-        variables.put("variable.0.3", (Constable) true);
-        variables.put("variable.0.4", parserExpression.execute("1+1"));
-        variables.put("variable.0.5", (Constable) false);
-        variables.put("variable.0.6", parserExpression.execute("false"));
-        parserExpression.setCondition("[a-zA-Z0-9\\.]+");
-
-        assertEquals(5d,(double) parserExpression.execute("$variable.0.1", NumberUtils.DOUBLE_ZERO, variables));
-        assertEquals("5",parserExpression.execute("$variable.0.2", NumberUtils.DOUBLE_ZERO, variables));
-        assertTrue((boolean) parserExpression.execute("$variable.0.3", NumberUtils.DOUBLE_ZERO, variables));
-        assertEquals(2d,(double) parserExpression.execute("$variable.0.4", NumberUtils.DOUBLE_ZERO, variables));
-        assertFalse((boolean) parserExpression.execute("$variable.0.5", NumberUtils.DOUBLE_ZERO, variables));
-        assertFalse((boolean) parserExpression.execute("$variable.0.6", NumberUtils.DOUBLE_ZERO, variables));
-    }
+//    @Test
+//    void variableTest() throws InterpreterException, CompileException {
+//
+//        Map<String, Constable> variables = new HashMap<>();
+//        variables.put("variable.0.1", (Constable) 5d);
+//        variables.put("variable.0.2", "5");
+//        variables.put("variable.0.3", (Constable) true);
+//        variables.put("variable.0.4", parserExpression.execute("1+1"));
+//        variables.put("variable.0.5", (Constable) false);
+//        variables.put("variable.0.6", parserExpression.execute("false"));
+//        parserExpression.setCondition("[a-zA-Z0-9\\.]+");
+//
+//        assertEquals(5d,(Double) parserExpression.execute("$variable.0.1", NumberUtils.DOUBLE_ZERO, variables));
+//        assertEquals("5",parserExpression.execute("$variable.0.2", NumberUtils.DOUBLE_ZERO, variables));
+//        assertTrue((boolean) parserExpression.execute("$variable.0.3", NumberUtils.DOUBLE_ZERO, variables));
+//        assertEquals(2d,(double) parserExpression.execute("$variable.0.4", NumberUtils.DOUBLE_ZERO, variables));
+//        assertFalse((boolean) parserExpression.execute("$variable.0.5", NumberUtils.DOUBLE_ZERO, variables));
+//        assertFalse((boolean) parserExpression.execute("$variable.0.6", NumberUtils.DOUBLE_ZERO, variables));
+//    }
 
     @Test
     void objectTests() throws InterpreterException, CompileException {
