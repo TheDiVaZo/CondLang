@@ -18,13 +18,11 @@ publishing {
         }
     }
     publications {
-        gpr(MavenPublication) {
-            groupId = group
-            artifactId = "condlang"
-            version = version
-            artifact ("$projectDir/build/libs/" + rootProject.name + "-" + version + "-all.jar") {
-                builtBy shadowJar
-            }
+        bar(MavenPublication) {
+            groupId group // Replace with group ID
+            artifactId "condlang"
+            version version
+            artifact("$projectDir/build/libs/" + rootProject.name + "-" + version + "-all.jar")
         }
     }
 }
