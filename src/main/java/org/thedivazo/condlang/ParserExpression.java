@@ -124,7 +124,7 @@ public class ParserExpression<T, R extends B, B> {
      * @param regEx regEx относительно которого будет производиться поиск условий (переменных) в выражении
      * @param condition функция, являющееся обработчиком условия, принимающая на вход {@link String} и возвращающая R ({@link ParserExpression})
      */
-    public void setCondition(@RegExp String regEx, BiFunction<T,String,B> condition) {
+    public void setCondition(@RegExp String regEx, Function<String,B> condition) {
         lexer.putOperator(regEx, TokenType.CONDITION);
         interpreter.addCondition(regEx, condition);
     }
@@ -134,12 +134,12 @@ public class ParserExpression<T, R extends B, B> {
     }
 
     /**
-     * Аналогичен {@link ParserExpression#setCondition(String, BiFunction)}, только возвращается статичное значение
-     * @param regEx {@link ParserExpression#setCondition(String, BiFunction)}
+     * Аналогичен {@link ParserExpression#setCondition(String, Function)}, только возвращается статичное значение
+     * @param regEx {@link ParserExpression#setCondition(String, Function)}
      * @param result статичное значение R ({@link ParserExpression})
      */
     public void setCondition(@RegExp String regEx, R result) {
-        setCondition(regEx, (arg1, arg2)->result);
+        setCondition(regEx, (arg1)->result);
     }
 
     /**
@@ -214,71 +214,48 @@ public class ParserExpression<T, R extends B, B> {
 
     /**
      * @param code код, который нужно выполнить
-     * @param input входные данные
      * @param localArguments локальные аргументы (условие, переменные). Они будут обработаны в первую очередь.
      * @return Возвращает значение R ({@link ParserExpression})
      * @throws CompileException исключение, генерируемое при возникновении ошибки компиляции
      * @throws InterpreterException исключение, генерируемое при возникновении ошибки выполнения
      */
-    public B execute(String code, T input, Map<String, B> localArguments) throws CompileException, InterpreterException {
-        return interpreter.execute(parser.parsing(lexer.analyze(code)),input, localArguments);
+    public B execute(String code, Map<String, B> localArguments) throws CompileException, InterpreterException {
+        return interpreter.execute(parser.parsing(lexer.analyze(code)),localArguments);
     }
 
     /**
      * @param objectNode откомпилированный объект, представляющий собой результат работы {@link ParserExpression#compile(String)}
-     * @param input входные данные
      * @param localArguments локальные аргументы (условие, переменные). Они будут обработаны в первую очередь.
      * @return Возвращает значение R ({@link ParserExpression})
      * @throws InterpreterException исключение, генерируемое при возникновении ошибки выполнения
      */
-    public B execute(Serializable objectNode, T input, Map<String, B> localArguments) throws InterpreterException {
+    public B execute(Serializable objectNode, Map<String, B> localArguments) throws InterpreterException {
         if(!(objectNode instanceof Node nodeMain)) throw new IllegalArgumentException("This object is not a code to be executed");
-        return interpreter.execute(nodeMain ,input, localArguments);
+        return interpreter.execute(nodeMain ,localArguments);
     }
 
     /**
-     * Аналогичен {@link ParserExpression#execute(Serializable, Object, Map)}, но только без локальных аргументов
-     * @param objectNode {@link ParserExpression#execute(Serializable, Object, Map)}
-     * @param input {@link ParserExpression#execute(Serializable, Object, Map)}
-     * @return {@link ParserExpression#execute(Serializable, Object, Map)}
-     * @throws InterpreterException {@link ParserExpression#execute(Serializable, Object, Map)}
-     */
-    public B execute(Serializable objectNode, T input) throws InterpreterException {
-        if(!(objectNode instanceof Node nodeMain)) throw new IllegalArgumentException("This object is not a code to be executed");
-        return interpreter.execute(nodeMain, input);
-    }
-
-    /**
-     * Аналогичен {@link ParserExpression#execute(String, Object, Map)}, но только без локальных аргументов
-     * @param code {@link ParserExpression#execute(String, Object, Map)}
-     * @param input {@link ParserExpression#execute(String, Object, Map)}
-     * @return {@link ParserExpression#execute(String, Object, Map)}
-     */
-    public B execute(String code, T input) throws CompileException, InterpreterException {
-        return interpreter.execute(parser.parsing(lexer.analyze(code)),input);
-    }
-
-    /**
-     * Аналогичен {@link ParserExpression#execute(String, Object)}, но только без входных данных
-     * @param code {@link ParserExpression#execute(String, Object, Map)}
-     * @return {@link ParserExpression#execute(String, Object, Map)}
-     */
-    public B execute(String code) throws CompileException, InterpreterException {
-        return interpreter.execute(parser.parsing(lexer.analyze(code)),null);
-    }
-
-    /**
-     * Аналогичен {@link ParserExpression#execute(Serializable, Object)}, но только без входных данных
-     * @param objectNode {@link ParserExpression#execute(Serializable, Object)}
-     * @return {@link ParserExpression#execute(Serializable, Object)}
+     * Аналогичен {@link ParserExpression#execute(Serializable, Map)}, но только без локальных аргументов
+     * @param objectNode {@link ParserExpression#execute(Serializable, Map)}
+     * @return {@link ParserExpression#execute(Serializable, Map)}
+     * @throws InterpreterException {@link ParserExpression#execute(Serializable, Map)}
      */
     public B execute(Serializable objectNode) throws InterpreterException {
         if(!(objectNode instanceof Node nodeMain)) throw new IllegalArgumentException("This object is not a code to be executed");
-        return interpreter.execute(nodeMain, null);
+        return interpreter.execute(nodeMain);
     }
 
     /**
-     * компилирует код для последующего использования в {@link ParserExpression#execute(Serializable, Object, Map)}
+     * Аналогичен {@link ParserExpression#execute(String, Map)}, но только без локальных аргументов
+     * @param code {@link ParserExpression#execute(String, Map)}
+     * @return {@link ParserExpression#execute(String, Map)}
+     */
+    public B execute(String code) throws CompileException, InterpreterException {
+        return interpreter.execute(parser.parsing(lexer.analyze(code)));
+    }
+
+    /**
+     * компилирует код для последующего использования в {@link ParserExpression#execute(Serializable, Map)}
      * @param code код
      * @return Возвращает объект, представляющий собой AST дерево. Данный код можно безопасно хранить и передавать.
      */

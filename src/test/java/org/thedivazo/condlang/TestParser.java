@@ -113,15 +113,13 @@ public class TestParser {
         variables.put("variable.0.4", parserExpression.execute("1+1"));
         variables.put("variable.0.5", (Constable) false);
         variables.put("variable.0.6", parserExpression.execute("false"));
-        parserExpression.setCondition("[a-zA-Z0-9\\.]+");
 
-        System.out.println(parserExpression.execute("$variable.0.1", NumberUtils.DOUBLE_ZERO, variables));
-        assertEquals(5d, parserExpression.execute("$variable.0.1", NumberUtils.DOUBLE_ZERO, variables));
-        assertEquals("5",parserExpression.execute("$variable.0.2", NumberUtils.DOUBLE_ZERO, variables));
-        assertTrue((boolean) parserExpression.execute("$variable.0.3", NumberUtils.DOUBLE_ZERO, variables));
-        assertEquals(2d,(double) parserExpression.execute("$variable.0.4", NumberUtils.DOUBLE_ZERO, variables));
-        assertFalse((boolean) parserExpression.execute("$variable.0.5", NumberUtils.DOUBLE_ZERO, variables));
-        assertFalse((boolean) parserExpression.execute("$variable.0.6", NumberUtils.DOUBLE_ZERO, variables));
+        assertEquals(5d, parserExpression.execute("$variable.0.1", variables));
+        assertEquals("5",parserExpression.execute("$variable.0.2", variables));
+        assertTrue((boolean) parserExpression.execute("$variable.0.3", variables));
+        assertEquals(2d,(double) parserExpression.execute("$variable.0.4", variables));
+        assertFalse((boolean) parserExpression.execute("$variable.0.5", variables));
+        assertFalse((boolean) parserExpression.execute("$variable.0.6", variables));
     }
 
     @Test
@@ -150,17 +148,15 @@ public class TestParser {
 
         Map<String, Constable> variables = new HashMap<>();
         variables.put("Putin", WrapperManager.generateWrapper(new Human(70, "Putin", Sex.MALE, new Address("Moscow", "the Red Square", "1")), Constable.class));
-        parserExpression.setCondition("[a-zA-Z0-9]+");
-        parserExpression.addMethod("[a-zA-Z0-9]+");
 
         String code1 = "$Putin#getName()";
         String code2 = "$Putin#getAge()";
         String code3 = "$Putin#getSex()";
         String code4 = "$Putin#getAddress()#getCity() + '|' + $Putin#getAddress()#getStreet()";
 
-        assertEquals("Putin", parserExpression.execute(code1, NumberUtils.DOUBLE_ZERO, variables).toString());
-        assertEquals(70d,(Double) parserExpression.execute(code2, NumberUtils.DOUBLE_ZERO, variables));
-        assertEquals("MALE", parserExpression.execute(code3, NumberUtils.DOUBLE_ZERO, variables).toString());
-        assertEquals("Moscow|the Red Square", parserExpression.execute(code4, NumberUtils.DOUBLE_ZERO, variables).toString());
+        assertEquals("Putin", parserExpression.execute(code1, variables).toString());
+        assertEquals(70d,(Double) parserExpression.execute(code2, variables));
+        assertEquals("MALE", parserExpression.execute(code3, variables).toString());
+        assertEquals("Moscow|the Red Square", parserExpression.execute(code4, variables).toString());
     }
 }

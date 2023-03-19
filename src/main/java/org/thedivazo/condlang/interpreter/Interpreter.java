@@ -33,7 +33,7 @@ public class Interpreter<T, R extends B, B> {
         private final @RegExp String regEx;
 
         @Getter
-        private final BiFunction<T,String,B> condition;
+        private final Function<String,B> condition;
 
     }
 
@@ -67,48 +67,47 @@ public class Interpreter<T, R extends B, B> {
         listFunctionOperators.put(sign, functionOperator);
     }
 
-    public void addCondition(@RegExp String regEx, BiFunction<T,String,B> condition) {
+    public void addCondition(@RegExp String regEx, Function<String,B> condition) {
         listConditionNames.add(new ConditionName(regEx, condition));
     }
 
-    public B execute(Node mainNode, T input) throws InterpreterException {
-        return execute(mainNode, input, null);
+    public B execute(Node mainNode) throws InterpreterException {
+        return execute(mainNode, null);
     }
 
 
     /**
      * Исполняет операторы, выраженные узлами AST дерева. Работает рекурсивно для каждых дочерних узлов родительского узла.
      * @param mainNode корневой узел AST дерева
-     * @param input выражение, которое нужно передать в condition
      * @return Возвращает результат работы.
      * @throws InterpreterException выбрасывается, если в AST дереве присутствуют ошибки.
      */
-    public B execute(Node mainNode , T input, Map<String, B> localConditions) throws InterpreterException {
+    public B execute(Node mainNode ,Map<String, B> localConditions) throws InterpreterException {
         if(mainNode instanceof TernaryOperatorNode ternaryOperatorNode) {
             List<Node> childrenNode = mainNode.getChildrenNodes().stream().toList();
-            return listTernaryOperators.get(ternaryOperatorNode.getNodeName()).apply((Boolean) execute(childrenNode.get(0), input, localConditions), execute(childrenNode.get(1), input, localConditions), execute(childrenNode.get(2), input,localConditions));
+            return listTernaryOperators.get(ternaryOperatorNode.getNodeName()).apply((Boolean) execute(childrenNode.get(0), localConditions), execute(childrenNode.get(1), localConditions), execute(childrenNode.get(2),  localConditions));
         }
         else if(mainNode instanceof BinaryOperatorNode binaryOperatorNode) {
             List<Node> childrenNode = mainNode.getChildrenNodes().stream().toList();
-            return listBinaryOperators.get(binaryOperatorNode.getNodeName()).apply(execute(childrenNode.get(0), input,localConditions), execute(childrenNode.get(1), input, localConditions));
+            return listBinaryOperators.get(binaryOperatorNode.getNodeName()).apply(execute(childrenNode.get(0), localConditions), execute(childrenNode.get(1), localConditions));
         }
         else if(mainNode instanceof UnaryOperatorNode unaryOperationNode) {
             List<Node> childrenNode = mainNode.getChildrenNodes().stream().toList();
-            return listUnaryOperators.get(unaryOperationNode.getNodeName()).apply(execute(childrenNode.get(0), input,localConditions));
+            return listUnaryOperators.get(unaryOperationNode.getNodeName()).apply(execute(childrenNode.get(0), localConditions));
         }
         else if(mainNode instanceof ConditionNode conditionNode) {
             if(!Objects.isNull(localConditions) && localConditions.containsKey(conditionNode.getNodeName())) return localConditions.get(conditionNode.getNodeName());
             if(listConditionNames.stream().anyMatch(cn ->conditionNode.getNodeName().matches(cn.getRegEx()))) {
                 ConditionName conditionName = listConditionNames.stream().filter(cn ->conditionNode.getNodeName().matches(cn.getRegEx())).findFirst().orElse(null);
                 assert conditionName != null;
-                return conditionName.getCondition().apply(input, conditionNode.getNodeName());
+                return conditionName.getCondition().apply(conditionNode.getNodeName());
             }
             else if(Objects.isNull(alternativeConditionParser)) throw new InterpreterException(String.format("Unknown condition: %s", mainNode.getNodeName()));
             else return alternativeConditionParser.apply(conditionNode.getNodeName());
         }
         else if(mainNode instanceof MethodOperatorNode methodOperatorNode) {
-            B context = execute(methodOperatorNode.getContext(), input, localConditions);
-            List<B> arguments = executeList(methodOperatorNode.getChildrenNodes(), input, localConditions);
+            B context = execute(methodOperatorNode.getContext(), localConditions);
+            List<B> arguments = executeList(methodOperatorNode.getChildrenNodes(), localConditions);
             if(context instanceof WrapperObject<?> wrapperObject) {
                 Object value = wrapperObject.executeMethod(methodOperatorNode.getNodeName(), arguments.toArray());
                 return (B) value;
@@ -116,15 +115,15 @@ public class Interpreter<T, R extends B, B> {
             else throw new InterpreterException(String.format("Condition \"%s\" not be Object.", methodOperatorNode.getContext().getNodeName()));
         }
         else if(mainNode instanceof FunctionOperatorNode functionOperatorNode) {
-            return listFunctionOperators.get(functionOperatorNode.getNodeName()).apply(executeList(mainNode.getChildrenNodes(), input, localConditions));
+            return listFunctionOperators.get(functionOperatorNode.getNodeName()).apply(executeList(mainNode.getChildrenNodes(), localConditions));
         }
         else throw new InterpreterException(String.format("Unknown node: %s", mainNode));
     }
     
-    protected List<B> executeList(List<Node> nodeList, T input, Map<String, B> localConditions) throws InterpreterException {
+    protected List<B> executeList(List<Node> nodeList,Map<String, B> localConditions) throws InterpreterException {
         List<B> objectList = new ArrayList<>(nodeList.size());
         for (Node node : nodeList) {
-            objectList.add(execute(node, input, localConditions));
+            objectList.add(execute(node, localConditions));
         }
         return objectList;
     }

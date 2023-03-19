@@ -18,7 +18,7 @@ import java.util.function.Function;
 public class TestVariables {
     public static final ParserExpression<Constable, Constable, Constable> parserExpression = new ParserExpression<>();
     static {
-        parserExpression.setCondition("'.*?'", (input, string)->string.substring(1,string.length()-1));
+        parserExpression.setCondition("'.*?'", (string)->string.substring(1,string.length()-1));
 
         //arithmetic operators
         // unary "-"
@@ -305,7 +305,7 @@ public class TestVariables {
         parserExpression.setCondition("PI",Double.valueOf(Math.PI));
         parserExpression.setCondition("E", Double.valueOf(Math.E));
 
-        parserExpression.setCondition("[0-9]+(\\.[0-9]+)?", (player, sign)->NumberUtils.createDouble(sign));
+        parserExpression.setCondition("[0-9]+(\\.[0-9]+)?", NumberUtils::createDouble);
 
         parserExpression.setAlternativeConditionParser(NumberUtils::createDouble);
         parserExpression.addDelimiter("\\,");
@@ -315,6 +315,9 @@ public class TestVariables {
         parserExpression.addVariableStartSymbols("\\$");
 
         parserExpression.addMethodReferenceSymbols("#");
+
+        parserExpression.addMethod("[a-zA-Z0-9]+");
+        parserExpression.setCondition("[a-zA-Z0-9\\.]+");
 
     }
 }
