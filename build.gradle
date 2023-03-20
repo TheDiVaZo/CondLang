@@ -16,16 +16,18 @@ java {
 
 publishing {
     repositories {
-        maven(MavenPublication) {
-            from components.java
+        maven {
+            name = "packages"
+            url = uri("https://maven.pkg.github.com/thedivazo/condlang")
+            credentials {
+                username = "TheDiVaZo"
+                password = System.getenv("TOKEN")
+            }
         }
     }
     publications {
-        bar(MavenPublication) {
-            groupId group // Replace with group ID
-            artifactId "condlang"
-            version version
-            artifact("$projectDir/build/libs/" + rootProject.name + "-" + version + "-all.jar")
+        maven(MavenPublication) {
+            from components.java
         }
     }
 }
