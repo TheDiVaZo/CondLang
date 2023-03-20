@@ -16,13 +16,8 @@ java {
 
 publishing {
     repositories {
-        maven {
-            name = "packages"
-            url = uri("https://maven.pkg.github.com/thedivazo/condlang")
-            credentials {
-                username = "TheDiVaZo"
-                password = System.getenv("TOKEN")
-            }
+        maven(MavenPublication) {
+            from components.java
         }
     }
     publications {
