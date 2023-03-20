@@ -20,7 +20,7 @@ publishing {
             name = "packages"
             url = uri("https://maven.pkg.github.com/thedivazo/condlang")
             credentials {
-                username = System.getenv("USERNAME")
+                username = "TheDiVaZo"
                 password = System.getenv("TOKEN")
             }
         }
