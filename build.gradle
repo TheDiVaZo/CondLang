@@ -21,7 +21,7 @@ publishing {
             url = uri("https://maven.pkg.github.com/thedivazo/condlang")
             credentials {
                 username = "TheDiVaZo"
-                password = "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"
+                password = "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"
             }
         }
     }
