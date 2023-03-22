@@ -7,6 +7,7 @@ import java.util.Set;
 
 public interface WrapperObject<T> extends Constable {
     T getObject();
+    Class<? extends T> getClassObject();
 
     Set<String> getMethodsName();
     boolean hasMethod(String nameMethod, Class<?>... methodArgumentsType);

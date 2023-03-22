@@ -1,9 +1,7 @@
 package org.thedivazo.condlang;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.junit.jupiter.api.Test;
 import org.thedivazo.condlang.exception.CompileException;
 import org.thedivazo.condlang.exception.InterpreterException;
@@ -147,16 +145,65 @@ public class TestParser {
         }
 
         Map<String, Constable> variables = new HashMap<>();
-        variables.put("Putin", WrapperManager.generateWrapper(new Human(70, "Putin", Sex.MALE, new Address("Moscow", "the Red Square", "1")), Constable.class));
+        variables.put("Putin", WrapperManager.generateWrapperObject(new Human(70, "Putin", Sex.MALE, new Address("Moscow", "the Red Square", "1")), Human.class, Constable.class));
 
-        String code1 = "$Putin#getName()";
-        String code2 = "$Putin#getAge()";
-        String code3 = "$Putin#getSex()";
-        String code4 = "$Putin#getAddress()#getCity() + '|' + $Putin#getAddress()#getStreet()";
+        Serializable code1 = parserExpression.compile("$Putin#getName()");
+        Serializable code2 = parserExpression.compile("$Putin#getAge()");
+        Serializable code3 = parserExpression.compile("$Putin#getSex()");
+        Serializable code4 = parserExpression.compile("$Putin#getAddress()#getCity() + '|' + $Putin#getAddress()#getStreet()");
 
         assertEquals("Putin", parserExpression.execute(code1, variables).toString());
         assertEquals(70d,(Double) parserExpression.execute(code2, variables));
         assertEquals("MALE", parserExpression.execute(code3, variables).toString());
         assertEquals("Moscow|the Red Square", parserExpression.execute(code4, variables).toString());
+    }
+
+    @Test
+    void objectParametersTest() throws CompileException, InterpreterException {
+        enum ProductQuality {
+            GREAT,
+            SHIT
+        }
+
+        @Getter
+        @RequiredArgsConstructor
+        class Product {
+            private final ProductQuality productQuality;
+        }
+
+        class ControlQualityProductTest {
+            public static boolean isNormalCount(Double i) {
+                return i > 50;
+            }
+
+            public static boolean isNormalProduct(Product productTest) {
+                return productTest.getProductQuality().equals(ProductQuality.GREAT);
+            }
+
+
+
+            public static boolean isNormalQuality(ProductQuality productQuality) {
+                return productQuality.equals(ProductQuality.GREAT);
+            }
+        }
+
+
+
+        Map<String, Constable> variables = new HashMap<>();
+        variables.put("product1", WrapperManager.generateWrapperObject(new Product(ProductQuality.GREAT), Product.class, Constable.class));
+        variables.put("product2", WrapperManager.generateWrapperObject(new Product(ProductQuality.SHIT), Product.class, Constable.class));
+
+        parserExpression.setCondition("ControlProduct", WrapperManager.generateWrapperObject(null, ControlQualityProductTest.class, Constable.class));
+        parserExpression.setCondition("ProductQuality", WrapperManager.generateWrapperObject(null, ProductQuality.class, Constable.class));
+
+        Serializable code1 = parserExpression.compile("ControlProduct#isNormalCount(51)");
+        Serializable code2 = parserExpression.compile("ControlProduct#isNormalProduct($product1)");
+        Serializable code3 = parserExpression.compile("ControlProduct#isNormalProduct($product2)");
+        //Serializable code4 = parserExpression.compile("ControlProduct#isNormalQuality(ProductQuality#GREAT)");
+
+        assertTrue((Boolean) parserExpression.execute(code1, variables));
+        assertTrue((Boolean) parserExpression.execute(code2, variables));
+        assertFalse((Boolean) parserExpression.execute(code3, variables));
+        //assertTrue((Boolean) parserExpression.execute(code4, variables));
     }
 }

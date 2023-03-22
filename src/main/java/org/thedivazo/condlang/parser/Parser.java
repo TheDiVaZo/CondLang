@@ -5,15 +5,14 @@ import org.apache.commons.collections4.list.SetUniqueList;
 import org.intellij.lang.annotations.RegExp;
 import org.thedivazo.condlang.exception.CompileException;
 import org.thedivazo.condlang.exception.SyntaxException;
+import org.thedivazo.condlang.interpreter.WrapperManager;
 import org.thedivazo.condlang.lexer.Lexer;
 import org.thedivazo.condlang.lexer.Token;
 import org.thedivazo.condlang.lexer.TokenType;
 import org.thedivazo.condlang.parser.AST.*;
 
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.lang.constant.Constable;
+import java.util.*;
 
 /**
  * Данный класс предназначен для парсинга списка токенов ({@link Lexer}) в дерево узлов (AST).

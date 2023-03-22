@@ -16,11 +16,14 @@ public abstract class AbstractWrapperObject<T> implements WrapperObject<T> {
 
     @Getter
     protected final T object;
+    @Getter
+    protected final Class<? extends T> classObject;
 
     protected final Set<WrapperMethod<T, ?>> wrapperMethodSet = new HashSet<>();
 
-    protected AbstractWrapperObject(T object) {
+    protected AbstractWrapperObject(T object, Class<? extends T> classObject) {
         this.object = object;
+        this.classObject = classObject;
         generateMethods();
     }
 
@@ -36,11 +39,15 @@ public abstract class AbstractWrapperObject<T> implements WrapperObject<T> {
 
     @Override
     public Object executeMethod(String nameMethod, Object... methodArguments) throws InterpreterException {
+        Object[] methodArgumentsUnwrapped = Arrays.stream(methodArguments).map(argument-> {
+            if(argument instanceof WrapperObject<?> wrapperObject) return wrapperObject.getObject();
+            else return argument;
+        }).toArray();
         Optional<WrapperMethod<T, ?>> wrapperMethod = wrapperMethodSet.stream().filter(
-                tWrapperMethod -> tWrapperMethod.equals(nameMethod, Arrays.stream(methodArguments).map(Object::getClass).toList().toArray(new Class[0])))
+                tWrapperMethod -> tWrapperMethod.equals(nameMethod, Arrays.stream(methodArgumentsUnwrapped).map(Object::getClass).toList().toArray(new Class[0])))
                 .findFirst();
         if(wrapperMethod.isEmpty()) return null;
-        else return wrapperMethod.get().execute(this, methodArguments);
+        else return wrapperMethod.get().execute(this, methodArgumentsUnwrapped);
     }
 
     @Override
